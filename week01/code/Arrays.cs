@@ -1,3 +1,4 @@
+
 public static class Arrays
 {
     /// <summary>
@@ -13,7 +14,22 @@ public static class Arrays
         // step by step before you write the code. The plan should be clear enough that it could
         // be implemented by another person.
 
-        return []; // replace this return statement with your own
+        // Plan:
+        // Step 1: Create a new double array with size equal to 'length'.
+        // Step 2: Loop from index 0 up to (but not including) 'length'.
+        // Step 3: At each index i, calculate the multiple: number * (i + 1).
+        //         (i + 1) because the first multiple is number * 1, the second is number * 2, etc.
+        // Step 4: Store the calculated value in the array at position i.
+        // Step 5: After the loop, return the filled array.
+
+        double[] result = new double[length];
+
+        for (int i = 0; i < length; i++)
+        {
+            result[i] = number * (i + 1);
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -29,5 +45,25 @@ public static class Arrays
         // Remember: Using comments in your program, write down your process for solving this problem
         // step by step before you write the code. The plan should be clear enough that it could
         // be implemented by another person.
+
+        // Plan:
+        // Step 1: Identify the split point. The last 'amount' elements will move to the front.
+        //         The split index is: data.Count - amount.
+        //         Example: data = {1,2,3,4,5,6,7,8,9}, amount = 3 → split at index 6.
+        // Step 2: Extract the last 'amount' elements as a new list (the "tail").
+        //         Using GetRange(splitIndex, amount) gives us {7, 8, 9}.
+        // Step 3: Remove those elements from the end of the original list.
+        //         Using RemoveRange(splitIndex, amount) leaves {1, 2, 3, 4, 5, 6}.
+        // Step 4: Insert the extracted tail at the front of the list (index 0).
+        //         Using InsertRange(0, tail) gives {7, 8, 9, 1, 2, 3, 4, 5, 6}.
+        // Step 5: The list is modified in place — no need to return anything.
+
+        int splitIndex = data.Count - amount;
+
+        List<int> tail = data.GetRange(splitIndex, amount);
+
+        data.RemoveRange(splitIndex, amount);
+
+        data.InsertRange(0, tail);
     }
 }
