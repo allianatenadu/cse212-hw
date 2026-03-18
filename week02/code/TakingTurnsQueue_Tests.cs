@@ -11,7 +11,9 @@ public class TakingTurnsQueueTests
     // Scenario: Create a queue with the following people and turns: Bob (2), Tim (5), Sue (3) and
     // run until the queue is empty
     // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, Sue, Tim, Tim
-    // Defect(s) Found: 
+    // Defect(s) Found: PersonQueue.Enqueue used Insert(0, person) which adds to the FRONT
+    //   instead of the back. This reversed the order so dequeues came out backwards.
+    //   Fixed by changing Insert(0, person) to _queue.Add(person).
     public void TestTakingTurnsQueue_FiniteRepetition()
     {
         var bob = new Person("Bob", 2);
@@ -43,7 +45,9 @@ public class TakingTurnsQueueTests
     // Scenario: Create a queue with the following people and turns: Bob (2), Tim (5), Sue (3)
     // After running 5 times, add George with 3 turns.  Run until the queue is empty.
     // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, George, Sue, Tim, George, Tim, George
-    // Defect(s) Found: 
+    // Defect(s) Found: Same PersonQueue.Enqueue defect as above — Insert(0,...) put new
+    //   people at the front, so George was incorrectly served before Sue and Tim after being added.
+    //   Fixed with the same _queue.Add(person) correction.
     public void TestTakingTurnsQueue_AddPlayerMidway()
     {
         var bob = new Person("Bob", 2);
@@ -85,7 +89,9 @@ public class TakingTurnsQueueTests
     // Scenario: Create a queue with the following people and turns: Bob (2), Tim (Forever), Sue (3)
     // Run 10 times.
     // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, Sue, Tim, Tim
-    // Defect(s) Found: 
+    // Defect(s) Found: TakingTurnsQueue.GetNextPerson only re-enqueued people when Turns > 1.
+    //   People with Turns <= 0 (infinite) were dequeued and then dropped forever.
+    //   Fixed by adding a separate check: if (person.Turns <= 0) re-enqueue without modifying turns.
     public void TestTakingTurnsQueue_ForeverZero()
     {
         var timTurns = 0;
@@ -116,7 +122,9 @@ public class TakingTurnsQueueTests
     // Scenario: Create a queue with the following people and turns: Tim (Forever), Sue (3)
     // Run 10 times.
     // Expected Result: Tim, Sue, Tim, Sue, Tim, Sue, Tim, Tim, Tim, Tim
-    // Defect(s) Found: 
+    // Defect(s) Found: Same infinite-turns defect as ForeverZero — negative turn values
+    //   also represent infinite turns (Turns <= 0) but the original code only checked Turns > 1.
+    //   Tim was dropped after his first turn. Fixed with the same Turns <= 0 guard.
     public void TestTakingTurnsQueue_ForeverNegative()
     {
         var timTurns = -3;
@@ -143,7 +151,7 @@ public class TakingTurnsQueueTests
     [TestMethod]
     // Scenario: Try to get the next person from an empty queue
     // Expected Result: Exception should be thrown with appropriate error message.
-    // Defect(s) Found: 
+    // Defect(s) Found: None — the empty-queue check and exception message were already correct.
     public void TestTakingTurnsQueue_Empty()
     {
         var players = new TakingTurnsQueue();
